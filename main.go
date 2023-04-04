@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -16,10 +15,16 @@ const openLibrarySearchURL = "https://openlibrary.org/search.json"
 const openLibraryAuthorSearchURL = "https://openlibrary.org/search.json"
 
 type Book struct {
+	CoverID          int      `json:"cover_i"`
+	HasFullText      bool     `json:"has_fulltext"`
+	EditionCount     int      `json:"edition_count"`
 	Title            string   `json:"title"`
 	AuthorName       []string `json:"author_name"`
-	EditionCount     int      `json:"edition_count"`
 	FirstPublishYear int      `json:"first_publish_year"`
+	Key              string   `json:"key"`
+	IA               []string `json:"ia"`
+	AuthorKey        []string `json:"author_key"`
+	PublicScanB      bool     `json:"public_scan_b"`
 }
 
 type SearchResult struct {
@@ -40,7 +45,7 @@ func getBookByTitle(c echo.Context) error {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
@@ -76,7 +81,7 @@ func getBooksByAuthor(c echo.Context) error {
 		}
 	}(resp.Body)
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
